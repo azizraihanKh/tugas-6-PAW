@@ -442,8 +442,82 @@ function renderTasks(): void {
           `}
         </li>
       `).join('')}
+    
     </ul>
+
+    <!-- Penjelasan Teknologi -->
+    <section class="technology-section">
+      <div class="technology-heading">
+        <h2>Teknologi yang Digunakan</h2>
+        <p>
+          Teknologi dan tools yang digunakan dalam pengembangan
+          aplikasi Daftar Tugas Kuliah.
+        </p>
+      </div>
+
+      <div class="technology-grid">
+        <article class="technology-card">
+          <h3>Git dan GitHub</h3>
+          <p>
+            Git digunakan untuk mengelola riwayat perubahan kode melalui
+            commit, branch, merge, push, dan pull. GitHub digunakan untuk
+            menyimpan repository serta mengelola Pull Request.
+          </p>
+        </article>
+
+        <article class="technology-card">
+          <h3>npm</h3>
+          <p>
+            npm digunakan untuk mengelola package dan dependency proyek.
+            npm juga menjalankan perintah seperti npm run dev untuk
+            pengembangan dan npm run build untuk membuat versi produksi.
+          </p>
+        </article>
+
+        <article class="technology-card">
+          <h3>TypeScript</h3>
+          <p>
+            TypeScript digunakan sebagai bahasa pemrograman utama.
+            Fitur seperti tipe data, interface, type alias, union type,
+            dan generics membantu membuat kode lebih terstruktur.
+          </p>
+        </article>
+
+        <article class="technology-card">
+          <h3>Vite</h3>
+          <p>
+            Vite digunakan sebagai development server dan build tool
+            untuk menjalankan aplikasi selama pengembangan serta
+            menghasilkan file aplikasi siap produksi.
+          </p>
+        </article>
+
+        <article class="technology-card">
+          <h3>Environment Variables</h3>
+          <p>
+            <p>
+              Environment variables digunakan untuk menyimpan konfigurasi
+              aplikasi seperti nama, versi, URL server, hingga informasi
+              sensitif seperti API Key dan token. File .env digunakan untuk
+              menyimpan nilai konfigurasi, sedangkan .env.example disediakan
+              sebagai contoh tanpa mencantumkan nilai rahasia.
+            </p>
+          </p>
+        </article>
+
+        <article class="technology-card">
+          <h3>Compiler, Transpiler, dan Bundler</h3>
+          <p>
+            TypeScript Compiler (tsc) memeriksa tipe data dan aturan
+            penulisan kode. Vite menggunakan esbuild untuk transformasi
+            TypeScript menjadi JavaScript, kemudian melakukan bundling
+            dan optimasi file aplikasi untuk produksi.
+          </p>
+        </article>
+      </div>
+    </section>
   `
+
 
   // Pencarian tugas
   const searchInput = document.querySelector<HTMLInputElement>(
