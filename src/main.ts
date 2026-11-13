@@ -5,32 +5,6 @@ import type { Task, TaskStatus } from './types/task'
 const appName: string = import.meta.env.VITE_APP_NAME
 const appVersion: string = import.meta.env.VITE_APP_VERSION
 
-// Data tugas awal
-const initialTasks: Task[] = [
-  {
-    id: 1,
-    course: 'Pengembangan Aplikasi Web',
-    title: 'Mengerjakan Tugas PAW',
-    description: 'Membuat aplikasi daftar tugas menggunakan TypeScript dan Vite.',
-    deadline: '2026-11-20'
-  },
-  {
-    id: 2,
-    course: 'Interaksi Manusia dan Komputer',
-    title: 'Membuat Laporan UX',
-    description: 'Menyusun laporan hasil evaluasi dan redesign aplikasi.',
-    deadline: '2026-11-18'
-  },
-  {
-    id: 3,
-    course: 'Pemrograman Aplikasi Mobile',
-    title: 'Belajar Kotlin',
-    description: 'Melanjutkan pengembangan aplikasi Kopi dan Nyemil.',
-    deadline: '2026-11-15',
-    resultLink: 'https://example.com/hasil-kotlin'
-  }
-]
-
 // Mengambil data tugas dari localStorage
 function loadTasks(): Task[] {
   const savedTasks: string | null = localStorage.getItem('tasks')
@@ -48,13 +22,29 @@ function loadTasks(): Task[] {
     }
   }
 
+  // Data contoh tugas
+  const initialTasks: Task[] = [
+    {
+      id: 1,
+      course: 'Pengembangan Aplikasi Web',
+      title: 'Pembuatan Halaman Profil',
+      description: 'Membuat halaman profil diri menggunakan HTML5 Semantik.',
+      deadline: '2026-09-18',
+      resultLink: 'https://raihankhoirulaziz.space/profil.html'
+    }
+  ]
+
+  localStorage.setItem('tasks', JSON.stringify(initialTasks))
+
   return initialTasks
 }
+
 
 let tasks: Task[] = loadTasks()
 let editingTaskId: number | null = null
 let completingTaskId: number | null = null
 let isAddingTask: boolean = false
+let searchQuery: string = ''
 
 // Menyimpan data tugas
 function saveTasks(): void {
@@ -82,7 +72,6 @@ function isValidUrl(link?: string): boolean {
 
   try {
     const url = new URL(link)
-
     return url.protocol === 'http:' || url.protocol === 'https:'
   } catch {
     return false
@@ -99,8 +88,20 @@ function formatDate(date: string): string {
   if (!date) return '-'
 
   const [year, month, day] = date.split('-')
-
   return `${day}-${month}-${year}`
+}
+
+// Memfilter tugas berdasarkan pencarian
+function filterTasks(taskList: Task[], keyword: string): Task[] {
+  const search: string = keyword.toLowerCase().trim()
+
+  if (!search) return taskList
+
+  return taskList.filter(task =>
+    task.title.toLowerCase().includes(search) ||
+    task.course.toLowerCase().includes(search) ||
+    task.description.toLowerCase().includes(search)
+  )
 }
 
 // Menampilkan aplikasi
@@ -114,6 +115,8 @@ function renderTasks(): void {
   const completedTasks: number = tasks.filter(
     task => getTaskStatus(task) === 'Selesai'
   ).length
+
+  const filteredTasks: Task[] = filterTasks(tasks, searchQuery)
 
   document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <header class="app-header">
@@ -152,6 +155,19 @@ function renderTasks(): void {
         + Tambah Tugas
       </button>
     </div>
+
+    <!-- Pencarian Tugas -->
+    ${tasks.length > 0 ? `
+      <div class="search-container">
+        <input
+          type="search"
+          id="task-search"
+          class="search-input"
+          placeholder="Cari nama tugas, mata kuliah, atau deskripsi..."
+          value="${escapeHTML(searchQuery)}"
+        >
+      </div>
+    ` : ''}
 
     <!-- Form Tambah Tugas -->
     <form
@@ -217,7 +233,12 @@ function renderTasks(): void {
           <p>Belum ada tugas.</p>
           <span>Tambahkan tugas kuliah pertamamu!</span>
         </li>
-      ` : tasks.map(task => `
+      ` : filteredTasks.length === 0 ? `
+        <li class="search-empty">
+          <p>Tugas tidak ditemukan.</p>
+          <span>Coba gunakan kata kunci pencarian lainnya.</span>
+        </li>
+      ` : filteredTasks.map(task => `
         <li class="task-card">
 
           ${editingTaskId === task.id ? `
@@ -424,6 +445,25 @@ function renderTasks(): void {
     </ul>
   `
 
+  // Pencarian tugas
+  const searchInput = document.querySelector<HTMLInputElement>(
+    '#task-search'
+  )
+
+  searchInput?.addEventListener('input', () => {
+    const cursorPosition = searchInput.selectionStart ?? searchInput.value.length
+
+    searchQuery = searchInput.value
+    renderTasks()
+
+    const updatedInput = document.querySelector<HTMLInputElement>(
+      '#task-search'
+    )
+
+    updatedInput?.focus()
+    updatedInput?.setSelectionRange(cursorPosition, cursorPosition)
+  })
+
   // Tombol tambah tugas
   const addTaskBtn = document.querySelector<HTMLButtonElement>(
     '#add-task-btn'
@@ -463,6 +503,7 @@ function renderTasks(): void {
     tasks.push(newTask)
 
     isAddingTask = false
+    searchQuery = ''
     saveTasks()
     renderTasks()
   })
